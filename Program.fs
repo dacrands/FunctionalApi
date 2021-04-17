@@ -19,6 +19,12 @@ type Message =
         Text : string
     }
 
+type Item = 
+    {
+        Id: int
+        Name: string
+    }
+
 // ---------------------------------
 // Views
 // ---------------------------------
@@ -46,6 +52,12 @@ module Views =
             p [] [ encodedText model.Text ]
         ] |> layout
 
+    let crands (model: Item) = 
+        [
+            partial()            
+            p [] [encodedText (String.Concat((Convert.ToString(model.Id)), " ", model.Name))]
+        ] |> layout
+
 // ---------------------------------
 // Web app
 // ---------------------------------
@@ -56,12 +68,19 @@ let indexHandler (name : string) =
     let view      = Views.index model
     htmlView view
 
+let crandsHandler (name: string) = 
+    let model = { Id = 1;  Name = name}
+    let view  = Views.crands model
+    htmlView view
+
 let webApp =
     choose [
         GET >=>
             choose [
                 route "/" >=> indexHandler "world"
                 routef "/hello/%s" indexHandler
+                route "/crands" >=> crandsHandler "cool guy"
+                routef "/crands/%s" crandsHandler
             ]
         setStatusCode 404 >=> text "Not Found" ]
 
